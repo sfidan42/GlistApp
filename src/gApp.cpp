@@ -19,6 +19,8 @@ gApp::~gApp() {
 }
 
 void gApp::setup() {
+	appmanager->setTargetFramerate(165);
+	appmanager->enableVsync();
 	gCanvas* cnv = new gCanvas(this);
 	appmanager->setCurrentCanvas(cnv);
 }

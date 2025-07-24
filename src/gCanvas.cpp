@@ -15,8 +15,6 @@ gCanvas::gCanvas(gApp* root) : gBaseCanvas(root) {
 gCanvas::~gCanvas() { delete font; }
 
 void gCanvas::setup() {
-	appmanager->setTargetFramerate(165);
-	appmanager->enableVsync();
 	font->loadFont("FreeSansBold.ttf", 16);
 }
 
