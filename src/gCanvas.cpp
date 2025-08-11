@@ -5,58 +5,121 @@
  *      Author: noyan
  */
 
+
 #include "gCanvas.h"
 
-gCanvas::gCanvas(gApp* root) : gBaseCanvas(root) {
-	this->root = root;
-	font = new gFont();
+
+gCanvas::gCanvas(gBaseApp *root) : gBaseCanvas(root) {
 }
 
-gCanvas::~gCanvas() { delete font; }
+gCanvas::~gCanvas() {
+}
 
 void gCanvas::setup() {
-	font->loadFont("FreeSansBold.ttf", 16);
+
+	using namespace ecs;
+
+	animationDuration = 1.0f;
+
+	auto* model = new gModel();
+	model->loadModel("alien_walk/scene.gltf");
+	for(int i = -3; i <= 3; i++) {
+		entity modelEntity = reg.create();
+		reg.emplace<gModel*>(modelEntity, model);
+		reg.emplace<Position<3>>(modelEntity, Position<3>{(float)i, 0.0f, 0.0f});
+		reg.emplace<Velocity<3>>(modelEntity, Velocity<3>{0.0f, 0.0f, 1.0f});
+		reg.emplace<Rotation<3>>(modelEntity, Rotation<3>{ -60.0f, 0.0f, 1.0f, 0.0f});
+	}
+
+	camera.setPosition(0, 1, 10);
+
+	entity lightEntity = reg.create();
+	auto* light1 = new gLight(gLight::LIGHTTYPE_DIRECTIONAL);
+	light1->setPosition(camera.getPosition());
+	light1->setDiffuseColor(255, 255, 0);
+	light1->setSpecularColor(66, 66, 66);
+	light1->setOrientation(camera.getLookOrientation());
+	light1->setSpotCutOffAngle(1.0f);
+
+	reg.emplace<gLight*>(lightEntity, light1);
+
+	font.load(gGetFontsDir() + "FreeSans.ttf", 12);
 }
 
 void gCanvas::update() {
-	const float deltaTime = appmanager->getElapsedTime();
-	(void)deltaTime;
+
+	using namespace ecs;
+
+	float deltaTime = static_cast<float>(appmanager->getElapsedTime());
+	animationTime += deltaTime;
+	if (animationTime >= animationDuration) {
+		animationTime = 0.0f;
+	}
+	auto view = reg.view_all<gModel*, Position<3>, Velocity<3>>();
+	for(auto e : view) {
+		auto& pos = reg.get<Position<3>>(e);
+		auto& vel = reg.get<Velocity<3>>(e);
+		auto* model = reg.get<gModel*>(e);
+		pos.x += vel.vx * deltaTime;
+		pos.y += vel.vy * deltaTime;
+		pos.z += vel.vz * deltaTime;
+		model->animate(animationTime);
+	}
 }
 
 void gCanvas::draw() {
-	font->drawText("fps: " + gToStr(1.0f / appmanager->getElapsedTime()), 0.0f, 16.0f);
+	setColor(255, 255, 255);
+
+	camera.begin();
+	enableDepthTest();
+
+	const auto& lights = reg.view_all<gLight*>();
+	const auto& models = reg.view_all<gModel*>();
+
+	for(auto e : lights) {
+		gLight* light = reg.get<gLight*>(e);
+		light->enable();
+	}
+
+	for(auto e : models) {
+		gModel* model = reg.get<gModel*>(e);
+		ecs::Position<3> pos = reg.get<ecs::Position<3>>(e);
+		model->setPosition(pos.x, pos.y, pos.z);
+		model->draw();
+	}
+
+	for(auto e : lights) {
+		gLight* light = reg.get<gLight*>(e);
+		light->disable();
+	}
+
+	disableDepthTest();
+	camera.end();
+
+	font.drawText("FPS: " + gToStr(root->getFramerate()), 10, 22);
 }
 
 void gCanvas::keyPressed(int key) {
-	//	gLogi("gCanvas::keyPressed") << "keyPressed:" << gKeyToStr(key);
+//	logi("GC", "keyPressed:" + gToStr(key));
 }
 
 void gCanvas::keyReleased(int key) {
-	//	gLogi("gCanvas::keyReleased") << "keyReleased:" << gKeyToStr(key);
-}
-
-void gCanvas::charPressed(unsigned int codepoint) {
-	//	gLogi("gCanvas") << "charPressed:" << gCodepointToStr(codepoint);
+//	logi("GC", "keyReleased:" + sgToStrtr(key));
 }
 
 void gCanvas::mouseMoved(int x, int y) {
-	//	gLogi("gCanvas") << "mouseMoved" << ", x:" << x << ", y:" << y;
+//	logi("mouseMoved x:" + gToStr(x) + ", y:" + gToStr(y));
 }
 
 void gCanvas::mouseDragged(int x, int y, int button) {
-	//	gLogi("gCanvas") << "mouseDragged" << ", x:" << x << ", y:" << y << ", b:" << button;
+//	logi("mouseDragged x:" + gToStr(x) + ", y:" + gToStr(y) + ", b:" + gToStr(button));
 }
 
 void gCanvas::mousePressed(int x, int y, int button) {
-	//	gLogi("gCanvas") << "mousePressed" << ", x:" << x << ", y:" << y << ", button:" << button;
 }
 
 void gCanvas::mouseReleased(int x, int y, int button) {
-	//	gLogi("gCanvas") << "mouseReleased" << ", x:" << x << ", y:" << y << ", button:" << button;
-}
-
-void gCanvas::mouseScrolled(int x, int y) {
-	//	gLogi("gCanvas") << "mouseScrolled" << ", x:" << x << ", y:" << y;
+//	logi("GC", "mouseReleased, button:" + gToStr(button));
 }
 
 void gCanvas::mouseEntered() {
@@ -65,11 +128,10 @@ void gCanvas::mouseEntered() {
 void gCanvas::mouseExited() {
 }
 
-void gCanvas::windowResized(int w, int h) {
-}
-
 void gCanvas::showNotify() {
+
 }
 
 void gCanvas::hideNotify() {
+
 }

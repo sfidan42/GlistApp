@@ -1,22 +1,25 @@
 /*
- * gCanvas.h
+* gCanvas.h
  *
  *  Created on: May 6, 2020
  *      Author: noyan
  */
 
-#ifndef GCANVAS_H_
-#define GCANVAS_H_
+#ifndef GAMECANVAS_H_
+#define GAMECANVAS_H_
 
-#include "gApp.h"
+#include "ecs.hpp"
 #include "gBaseCanvas.h"
-#include "gGUITextbox.h"
-#include "gImage.h"
-#include <GLFW/glfw3.h>
+#include "gFont.h"
+#include "gCamera.h"
+#include "gLight.h"
+#include "gModel.h"
+#include "components/primitives.h"
+#include "ecs.hpp"
 
 class gCanvas : public gBaseCanvas {
 public:
-	gCanvas(gApp* root);
+	gCanvas(gBaseApp *root);
 	virtual ~gCanvas();
 
 	void setup();
@@ -25,22 +28,25 @@ public:
 
 	void keyPressed(int key);
 	void keyReleased(int key);
-	void charPressed(unsigned int codepoint);
-	void mouseMoved(int x, int y);
+	void mouseMoved(int x, int y );
 	void mouseDragged(int x, int y, int button);
 	void mousePressed(int x, int y, int button);
 	void mouseReleased(int x, int y, int button);
-	void mouseScrolled(int x, int y);
 	void mouseEntered();
 	void mouseExited();
-	void windowResized(int w, int h);
 
 	void showNotify();
 	void hideNotify();
 
 private:
-	gApp* root;
-	gFont* font;
+	gFont font;
+
+	float animationTime = 0.0f;
+	float animationDuration = 0.0f;
+
+	ecs::Registry reg;
+	gCamera camera;
+
 };
 
-#endif /* GCANVAS_H_ */
+#endif /* GAMECANVAS_H_ */

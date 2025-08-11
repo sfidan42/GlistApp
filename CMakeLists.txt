@@ -8,7 +8,7 @@ set(APP_NAME Gladiator)
 
 
 ########## USED PLUGINS LIST ##########
-set(PLUGINS)
+set(PLUGINS gipECS)
 
 
 ##################################################
