@@ -8,7 +8,6 @@
 #ifndef GAMECANVAS_H_
 #define GAMECANVAS_H_
 
-#include "ecs.hpp"
 #include "gBaseCanvas.h"
 #include "gFont.h"
 #include "gCamera.h"

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Skull Crawler
+* source:	https://sketchfab.com/3d-models/skull-crawler-52c154b0469248ce8de3b59e1e631f7b
+* author:	Anees Animates (https://sketchfab.com/AneesAnimates)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Skull Crawler" (https://sketchfab.com/3d-models/skull-crawler-52c154b0469248ce8de3b59e1e631f7b) by Anees Animates (https://sketchfab.com/AneesAnimates) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
